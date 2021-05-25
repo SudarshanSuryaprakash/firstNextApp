@@ -1,20 +1,20 @@
 import { useRouter } from 'next/router';
-import { getFilteredEvents } from '../../dummy-data';
+import { getFilteredEvents } from '../../helpers/api-util';
 import EventList from '../../components/events/event-list';
 
-const FilteredEventsPage = () => {
+const FilteredEventsPage = (props) => {
   const router = useRouter();
-  const filterData = router.query.slug;
-  if (!filterData) return <p>Loading...</p>;
+  // const filterData = router.query.slug;
+  // if (!filterData) return <p>Loading...</p>;
 
-  const numYear = +filterData[0];
-  const numMonth = +filterData[1];
+  // const numYear = +filterData[0];
+  // const numMonth = +filterData[1];
 
-  if (isNaN(numYear) || isNaN(numMonth)) {
+  if (props.hasError) {
     return <p>Invalid Filter. Adjust values.</p>;
   }
 
-  const filteredEvents = getFilteredEvents({ year: numYear, month: numMonth });
+  const { filteredEvents } = props;
 
   if (!filteredEvents || !filteredEvents.length) {
     return <p>No events found for this filter</p>;
@@ -25,6 +25,33 @@ const FilteredEventsPage = () => {
       <EventList items={filteredEvents} />
     </div>
   );
+};
+
+export const getServerSideProps = async (context) => {
+  const { params } = context;
+
+  const filterData = params.slug;
+
+  const numYear = +filterData[0];
+  const numMonth = +filterData[1];
+
+  if (isNaN(numYear) || isNaN(numMonth)) {
+    return {
+      props: {
+        hasError: true,
+      },
+    };
+  }
+
+  const filteredEvents = await getFilteredEvents({
+    year: numYear,
+    month: numMonth,
+  });
+  return {
+    props: {
+      filteredEvents,
+    },
+  };
 };
 
 export default FilteredEventsPage;

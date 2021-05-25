@@ -1,6 +1,8 @@
 import classes from './event-logistics.module.css';
 import LogisticsItem from './logistics-item';
 
+import Image from 'next/image';
+
 function EventLogistics(props) {
   const { date, address, image, imageAlt } = props;
 
@@ -9,12 +11,15 @@ function EventLogistics(props) {
     month: 'long',
     year: 'numeric',
   });
-  const addressText = address.replace(', ', '\n');
+  console.log(date);
+  //const addressText = address.replace(', ', '\n');
+  const addressText = address;
 
   return (
     <section className={classes.logistics}>
       <div className={classes.image}>
-        <img src={`/${image}`} alt={imageAlt} />
+        {/* <img src={`/${image}`} alt={imageAlt} /> */}
+        <Image src={`/${image}`} alt={imageAlt} width={400} height={400} />
       </div>
       <ul className={classes.list}>
         <LogisticsItem>
